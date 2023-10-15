@@ -16,7 +16,7 @@ jobs:
           node-version: '18'
       - name: install kintone-api-client
         run: npm install @kintone/rest-api-client
-      - name: test job(get kintone records)
+      - name: main job(get kintone records and create QRcode list)
         run: node jobs/getKintoneRecords.js
       - name: Diff
         id: diff
