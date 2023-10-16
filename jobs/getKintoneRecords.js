@@ -72,7 +72,7 @@ function getQRCodeUrl(url) {
             }); 
 
             // 取得レコードのステータス更新
-            if(record.ステータス.value === "accepted"){
+            if(jrec.ステータス.value === "accepted"){
               client.record.updateRecordStatus( {action:'公開する', app:APP_ID, id:jrec.$id.value})
             }
           });
