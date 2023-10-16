@@ -57,7 +57,12 @@ function getQRCodeUrl(url) {
               if( err ){
                 console.log(err.message);
               } else {
-                console.log(`appendFile id=${jrec.$id.value}`);
+                console.log(`appendFile id=${jrec.$id.value} status:${jrec.ステータス.value}`);
+                // 取得レコードのステータス更新
+                if(jrec.ステータス.value === "accepted"){
+                  client.record.updateRecordStatus( {action:'公開する', app:APP_ID, id:jrec.$id.value})
+                  console.log(`status updated id=${jrec.$id.value} status:${jrec.ステータス.value}`);
+                }
                 if(index === resp.records.length-1){
                   // 取得データを表示用のオブジェクトとして整える
                   fs.appendFile(LIST_PATH, "</ul>\n);\n}", err => {
@@ -71,10 +76,6 @@ function getQRCodeUrl(url) {
               }
             }); 
 
-            // 取得レコードのステータス更新
-            if(jrec.ステータス.value === "accepted"){
-              client.record.updateRecordStatus( {action:'公開する', app:APP_ID, id:jrec.$id.value})
-            }
           });
  
     } catch (err) {
