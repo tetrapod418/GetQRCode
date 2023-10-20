@@ -31,8 +31,12 @@ jobs:
           node-version: '18'
       - name: install kintone-api-client
         run: npm install @kintone/rest-api-client
+      - name: check need update
+        id: check_update
+        run: node jobs/checkNeedUpdate.js
       - name: main job(get kintone records and create QRcode list)
         run: node jobs/getKintoneRecords.js
+        if: steps.check_update == 'success'
       - name: Diff
         id: diff
         run: |
