@@ -27,7 +27,9 @@ function getQRCodeUrl(url) {
       // レコードの取得
       const resp = await client.record.getRecords(params);
       console.log('check for need update');
-      return (resp !== undefined && resp.records.length > 0) ? 'success' : 'failure'; 
+      const retval = (resp !== undefined && resp.records.length > 0)? 'success' : 'failure'; 
+      console.log(`result = ${retval}`);
+      return  retval;
 
     } catch (err) {
       console.log(err);
