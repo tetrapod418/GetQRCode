@@ -42,10 +42,10 @@ function isExistUpdateData(rows) {
       
       // レコードの取得
       const resp = await client.record.getRecords(params);
-      console.log(resp.records);
 
       // 新しい対象データの有無
       if(isExistUpdateData(resp) === false){
+        console.log('exist of update data');
         return;
       }
 
