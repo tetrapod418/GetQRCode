@@ -7,6 +7,9 @@ on:
 jobs:
   testdata:
     runs-on: ubuntu-latest
+    # Map a step output to a job output
+    outputs:
+      testresult: ${{ steps.testdata.outputs.test }}
     env:
        KINTONE_API_TOKEN: ${{ vars.JNKYKN_KINTONE_API_TOKEN_APPID2 }}
     steps:
@@ -19,10 +22,10 @@ jobs:
       - name: check need update
         id: check_update_outcome
         run: |
-          node jobs/checkNeedUpdate.js
-          echo steps.check_update.outcome
+          node jobs/checkNeedUpdate.js >> "$GITHUB_OUTPUT"
   getdata:
     runs-on: ubuntu-latest
+    needs: testdata
     env:
        KINTONE_API_TOKEN: ${{ vars.JNKYKN_KINTONE_API_TOKEN_APPID2 }}
     permissions:
@@ -35,13 +38,10 @@ jobs:
       - name: install kintone-api-client
         run: npm install @kintone/rest-api-client
       - name: check need update
-        id: check_update_outcome
-        run: |
-          node jobs/checkNeedUpdate.js
-          echo steps.check_update.outcome
+        run: echo ${{needs.testdata.outputs.testresult}}
       - name: main job(get kintone records and create QRcode list)
         run: node jobs/getKintoneRecords.js
-        if: steps.check_update == 'success'
+        if: ${{needs.testdata.outputs.testresult}} == success
       - name: Diff
         id: diff
         run: |
