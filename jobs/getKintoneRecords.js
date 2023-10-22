@@ -45,7 +45,7 @@ function isExistUpdateData(rows) {
 
       // 新しい対象データの有無
       if(isExistUpdateData(resp) === false){
-        console.log('exist of update data');
+        console.log('not exist of update => data skip next job');
         return;
       }
 
