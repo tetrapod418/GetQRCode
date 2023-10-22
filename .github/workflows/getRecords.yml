@@ -28,6 +28,7 @@ jobs:
     needs: testdata
     env:
        KINTONE_API_TOKEN: ${{ vars.JNKYKN_KINTONE_API_TOKEN_APPID2 }}
+       OUTPUT: ${{needs.testdata.outputs.testresult}}
     permissions:
 
       statuses: write
@@ -40,7 +41,9 @@ jobs:
       - name: install kintone-api-client
         run: npm install @kintone/rest-api-client
       - name: check need update
-        run: echo "${{needs.testdata.outputs.testresult}}"
+        run: |
+          echo "echo output" 
+          echo "$OUTPUT"
       - name: main job(get kintone records and create QRcode list)
         run: node jobs/getKintoneRecords.js
         if: ${{needs.testdata.outputs.testresult}} == success
