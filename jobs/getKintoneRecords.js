@@ -12,6 +12,7 @@ function isExistUpdateData(rows) {
       const srcData = JSON.stringify(record);
       const jrec = JSON.parse(srcData);
       if(jrec.ステータス.value === 'accepted') {
+        console.log(`jrec.ステータス.value = ${jrec.ステータス.value}`);
         return true;
       }
 
