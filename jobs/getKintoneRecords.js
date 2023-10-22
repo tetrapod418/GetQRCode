@@ -7,7 +7,7 @@ function getQRCodeUrl(url) {
 // 更新対象データの有無チェック
 function isExistUpdateData(rows) {
   rows.records.map(
-    (record, index) => {
+    () => {
       // 取得データ→JSON→オブジェクト
       const srcData = JSON.stringify(record);
       const jrec = JSON.parse(srcData);
@@ -45,7 +45,7 @@ function isExistUpdateData(rows) {
       console.log(resp.records);
 
       // 新しい対象データの有無
-      if(!isExistUpdateData(resp)){
+      if(isExistUpdateData(resp) === false){
         return;
       }
 
