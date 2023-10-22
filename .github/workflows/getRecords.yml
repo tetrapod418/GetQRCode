@@ -5,25 +5,10 @@ on:
   pull_request:
 
 jobs:
-  getdata:
+  testdata:
     runs-on: ubuntu-latest
     env:
        KINTONE_API_TOKEN: ${{ vars.JNKYKN_KINTONE_API_TOKEN_APPID2 }}
-    permissions:
-       actions: write
-       checks: write
-       contents: write
-       deployments: write
-       id-token: write
-       issues: write
-       discussions: write
-       packages: write
-       pages: write
-       pull-requests: write
-       repository-projects: write
-       security-events: write
-       statuses: write
-      
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
@@ -32,8 +17,28 @@ jobs:
       - name: install kintone-api-client
         run: npm install @kintone/rest-api-client
       - name: check need update
-        id: check_update
-        run: node jobs/checkNeedUpdate.js
+        id: check_update_outcome
+        run: |
+          node jobs/checkNeedUpdate.js
+          echo steps.check_update.outcome
+  getdata:
+    runs-on: ubuntu-latest
+    env:
+       KINTONE_API_TOKEN: ${{ vars.JNKYKN_KINTONE_API_TOKEN_APPID2 }}
+    permissions:
+       statuses: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: install kintone-api-client
+        run: npm install @kintone/rest-api-client
+      - name: check need update
+        id: check_update_outcome
+        run: |
+          node jobs/checkNeedUpdate.js
+          echo steps.check_update.outcome
       - name: main job(get kintone records and create QRcode list)
         run: node jobs/getKintoneRecords.js
         if: steps.check_update == 'success'
