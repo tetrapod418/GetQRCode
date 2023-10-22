@@ -22,7 +22,7 @@ jobs:
       - name: check need update
         id: check_update_outcome
         run: |
-          echo "test = node jobs/checkNeedUpdate.js" >> "$GITHUB_OUTPUT"
+          echo "test = hello" >> "$GITHUB_OUTPUT"
   getdata:
     runs-on: ubuntu-latest
     needs: testdata
