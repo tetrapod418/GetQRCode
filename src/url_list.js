@@ -5,6 +5,8 @@ export function UrlList() {
 <li><div>Cybozu Inside Out<div><img src="http://api.qrserver.com/v1/create-qr-code/?data=https://blog.cybozu.io/&size=100x100" alt="https://blog.cybozu.io/" title="Cybozu Inside Out" /><div>Cybozu Inside Out　は、
 サイボウズの開発本部、運用本部、サイボウズ・ラボのエンジニアのブログです。</div></div></div></li>
 
+<li><div>Cybozu Tech<div><img src="http://api.qrserver.com/v1/create-qr-code/?data=https://tech.cybozu.io&size=100x100" alt="https://tech.cybozu.io" title="Cybozu Tech" /><div>テスト用のURL登録</div></div></div></li>
+
 </ul>
 );
 }
