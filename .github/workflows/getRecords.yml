@@ -28,7 +28,9 @@ jobs:
     env:
        KINTONE_API_TOKEN: ${{ vars.JNKYKN_KINTONE_API_TOKEN_APPID2 }}
     permissions:
-       statuses: write
+
+      statuses: write
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
