@@ -21,7 +21,9 @@ jobs:
         run: npm install @kintone/rest-api-client
       - name: check need update
         id: check_update_outcome
-        run: node jobs/checkNeedUpdate.js >> "$GITHUB_OUTPUT"
+        run: |
+          node jobs/checkNeedUpdate.js >> "$GITHUB_OUTPUT"
+          echo "$GITHUB_OUTPUT" 
   getdata:
     runs-on: ubuntu-latest
     needs: testdata
@@ -39,7 +41,7 @@ jobs:
       - name: install kintone-api-client
         run: npm install @kintone/rest-api-client
       - name: check need update
-        run: echo ${{needs.testdata.outputs.testresult}}
+        run: echo "${{needs.testdata.outputs.testresult}}"
       - name: main job(get kintone records and create QRcode list)
         run: node jobs/getKintoneRecords.js
         if: ${{needs.testdata.outputs.testresult}} == success
