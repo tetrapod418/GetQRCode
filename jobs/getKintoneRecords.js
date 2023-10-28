@@ -15,10 +15,30 @@ function isExistUpdateData(rows) {
         console.log(`jrec.ステータス.value = ${jrec.ステータス.value}`);
         return true;
       }
-
-  }); 
-  return false;
+  });
+  return items.includes(true);
 }
+// リスト表示用タグの取得
+function getUrlList(rows) {
+  const urls = rows.records.map(
+    (record) => {
+      const srcData = JSON.stringify(record);
+      const jrec = JSON.parse(srcData);
+      return `\t\t<li><div>${jrec.title.value}<div><img src=\"${getQRCodeUrl(jrec.URL.value)}\" alt=\"${jrec.URL.value}\" title=\"${jrec.title.value}\" /><div>${jrec.descriptions.value}</div></div></div></li>\n`;
+        });
+        return urls.join('');
+}
+
+// QRコード生成用URLの取得
+function getQRCodeUrl(url) {
+  return `http://api.qrserver.com/v1/create-qr-code/?data=${url}&size=100x100`;
+}
+
+// リスト表示用タグの整形
+function getExportFileData(urls) {
+  return `export function UrlList() { \n\t return ( <ul>\n${urls}</ul>\n);\n}`;
+}
+      
 
 (async () => {
     try {
@@ -44,11 +64,16 @@ function isExistUpdateData(rows) {
       const resp = await client.record.getRecords(params);
 
       // 新しい対象データの有無
-      if(isExistUpdateData(resp) === false){
+      if(isExistUpdateData(resp) === true){
+      } else {
         console.log('not exist of update => data skip next job');
         return;
       }
 
+      // リスト表示用タグの取得
+      const urls = getUrlList(resp);
+      const exportData = getExportFileData(urls);
+      
       const LIST_PATH = './src/url_list.js';
 
       // リスト追加先のファイル準備
@@ -59,45 +84,24 @@ function isExistUpdateData(rows) {
           return;
         }
       });
-      fs.writeFile(LIST_PATH, "export function UrlList() { \n\t return ( <ul>\n", err => {
+      fs.writeFile(LIST_PATH, exportData, err => {
         if( err ){
           console.log(err.message);
         } else {
-          console.log(`appendFile function start`);
+          console.log(`create data file`);
         }
       }); 
 
+      // 取得データのステータス更新
       resp.records.map(
-          (record, index) => {
-            // 取得データ→JSON→オブジェクト
+        (record) => {
             const srcData = JSON.stringify(record);
             const jrec = JSON.parse(srcData);
-            const urllist = `\t\t<li><div>${jrec.title.value}<div><img src=\"${getQRCodeUrl(jrec.URL.value)}\" alt=\"${jrec.URL.value}\" title=\"${jrec.title.value}\" /><div>${jrec.descriptions.value}</div></div></div></li>\n`;
-            // 取得データを表示対象リストに追加する
-            fs.appendFile(LIST_PATH, urllist + '\n', err => {
-              if( err ){
-                console.log(err.message);
-              } else {
-                console.log(`appendFile id=${jrec.$id.value}`);
-                if(index === resp.records.length-1){
-                  // 取得データを表示用のオブジェクトとして整える
-                  fs.appendFile(LIST_PATH, "</ul>\n);\n}", err => {
-                    if( err ){
-                      console.log(err.message);
-                    } else {
-                      console.log(`appendFile closetag`);
-                    }
-                  }); 
-                }
-              }
-            }); 
-
-            // 取得レコードのステータス更新
-            if(record.ステータス === "accepted"){
-              client.record.updateRecordStatus( {action:'公開する', app:APP_ID, id:jrec.$id.value})
-            }
-          });
- 
+    
+                if(jrec.ステータス.value === "accepted"){
+                    client.record.updateRecordStatus( {action:'公開する', app:APP_ID, id:jrec.$id.value})
+                }});
+     
     } catch (err) {
       console.log(err);
     }
