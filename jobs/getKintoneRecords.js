@@ -74,13 +74,10 @@ function getExportFileData(urls) {
         }
       }); 
 
-      // 取得データのステータス更新
-      kintoneRows.forEach(
-        (record) => {
-          if(record.status === "accepted"){
-            client.record.updateRecordStatus( {action:'公開する', app:APP_ID, id:record.id})
-          }});
-     
+      // 承認済データのステータス更新
+      kintoneRows.filter((row)=>row.status === 'accepted').forEach(element => {
+          client.record.updateRecordStatus( {action:'公開する', app:APP_ID, id:record.id})
+        });
     } catch (err) {
       console.log(err);
     }
