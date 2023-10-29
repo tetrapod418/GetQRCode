@@ -1,0 +1,40 @@
+name: Run get kintone records (TypeScript)
+
+on:
+  workflow_dispatch: 
+  pull_request:
+  schedule:
+    - cron: '0 9,18 * * *'  # 9:00 to 18:00 every hour 
+
+jobs:
+  getdata:
+    runs-on: ubuntu-latest
+    env:
+       KINTONE_API_TOKEN: ${{ vars.JNKYKN_KINTONE_API_TOKEN_APPID2 }}
+    permissions:
+      statuses: write
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: install kintone-api-client
+        run: npm install @kintone/rest-api-client
+      - name: main job(get kintone records and create QRcode list)
+        run: ts-node jobs/getKintoneRecords.ts
+      - name: Diff
+        id: diff
+        run: |
+          git add -N .
+          git diff --name-only --exit-code
+        continue-on-error: true
+      - name: Commit & Push
+        run: |
+          set -x
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add .
+          git commit --author=. -m 'generated'
+          git push
+        if: steps.diff.outcome == 'failure'
