@@ -65,7 +65,7 @@ function getExportFileData(urls) {
       
       const LIST_PATH = './src/url_list.js';
 
-      // リスト追加先のファイル準備
+      // 表示用リストファイル出力
       const listFile = writeFile(LIST_PATH, exportData, err => {
         if( err ){
           console.log(err.message);
