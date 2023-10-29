@@ -1,4 +1,4 @@
-name: Run get kintone records to show QR code list
+name: Run get kintone records (TypeScript)
 
 on:
   workflow_dispatch: 
@@ -22,7 +22,7 @@ jobs:
       - name: install kintone-api-client
         run: npm install @kintone/rest-api-client
       - name: main job(get kintone records and create QRcode list)
-        run: node jobs/getKintoneRecords.js
+        run: ts-node jobs/getKintoneRecords.ts
       - name: Diff
         id: diff
         run: |
