@@ -1,30 +1,11 @@
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
+const {writeFile} = require('fs');
 
-function getQRCodeUrl(url) {
-  return `http://api.qrserver.com/v1/create-qr-code/?data=${url}&size=100x100`;
-}
-
-// 更新対象データの有無チェック
-function isExistUpdateData(rows) {
-  const items = rows.records.map(
-    (record) => {
-      // 取得データ→JSON→オブジェクト
-      const srcData = JSON.stringify(record);
-      const jrec = JSON.parse(srcData);
-      if(jrec.ステータス.value === 'accepted') {
-        console.log(`jrec.ステータス.value = ${jrec.ステータス.value}`);
-        return true;
-      }
-  });
-  return items.includes(true);
-}
 // リスト表示用タグの取得
 function getUrlList(rows) {
-  const urls = rows.records.map(
-    (record) => {
-      const srcData = JSON.stringify(record);
-      const jrec = JSON.parse(srcData);
-      return `\t\t<li><div>${jrec.title.value}<div><img src=\"${getQRCodeUrl(jrec.URL.value)}\" alt=\"${jrec.URL.value}\" title=\"${jrec.title.value}\" /><div>${jrec.descriptions.value}</div></div></div></li>\n`;
+  const urls = rows.map(
+    (row) => {
+      return `\t\t<li><div>${row.title}<div><img src=\"${getQRCodeUrl(row.url)}\" alt=\"${row.url}\" title=\"${row.title}\" /><div>${row.descriptions}</div></div></div></li>\n`;
         });
         return urls.join('');
 }
@@ -38,7 +19,6 @@ function getQRCodeUrl(url) {
 function getExportFileData(urls) {
   return `export function UrlList() { \n\t return ( <ul>\n${urls}</ul>\n);\n}`;
 }
-      
 
 (async () => {
     try {
@@ -62,29 +42,31 @@ function getExportFileData(urls) {
       
       // レコードの取得
       const resp = await client.record.getRecords(params);
-
+      const kintoneRows = resp.records.map(
+        (record)=>{
+          const jrec = JSON.parse(JSON.stringify(record));
+          return {
+            id : jrec.$id.value,
+            title: jrec.title.value,
+            url: jrec.URL.value,
+            descriptions: jrec.descriptions.value,
+            status: jrec.ステータス.value
+          };
+        });
       // 新しい対象データの有無
-      if(isExistUpdateData(resp) === true){
-      } else {
+      if(kintoneRows.filter((row)=>row.status === 'accepted').length === 0){
         console.log('not exist of update => data skip next job');
         return;
       }
 
       // リスト表示用タグの取得
-      const urls = getUrlList(resp);
+      const urls = getUrlList(kintoneRows);
       const exportData = getExportFileData(urls);
       
       const LIST_PATH = './src/url_list.js';
 
       // リスト追加先のファイル準備
-      const fs = require('fs');
-      fs.open(LIST_PATH, 'w+', err => {
-        if( err ){
-          console.log(err.message);
-          return;
-        }
-      });
-      fs.writeFile(LIST_PATH, exportData, err => {
+      const listFile = writeFile(LIST_PATH, exportData, err => {
         if( err ){
           console.log(err.message);
         } else {
@@ -93,14 +75,11 @@ function getExportFileData(urls) {
       }); 
 
       // 取得データのステータス更新
-      resp.records.map(
+      kintoneRows.while(
         (record) => {
-            const srcData = JSON.stringify(record);
-            const jrec = JSON.parse(srcData);
-    
-                if(jrec.ステータス.value === "accepted"){
-                    client.record.updateRecordStatus( {action:'公開する', app:APP_ID, id:jrec.$id.value})
-                }});
+          if(record.status === "accepted"){
+            client.record.updateRecordStatus( {action:'公開する', app:APP_ID, id:record.id})
+          }});
      
     } catch (err) {
       console.log(err);
