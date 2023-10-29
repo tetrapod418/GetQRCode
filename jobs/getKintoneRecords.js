@@ -75,7 +75,7 @@ function getExportFileData(urls) {
       }); 
 
       // 取得データのステータス更新
-      kintoneRows.while(
+      kintoneRows.forEach(
         (record) => {
           if(record.status === "accepted"){
             client.record.updateRecordStatus( {action:'公開する', app:APP_ID, id:record.id})
