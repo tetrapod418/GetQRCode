@@ -55,7 +55,7 @@ function getExportFileData(urls) {
         });
       // 新しい対象データの有無
       if(kintoneRows.filter((row)=>row.status === 'accepted').length === 0){
-        console.log('not exist of update => data skip next job');
+        console.log('not exist of update => skip next step');
         return;
       }
 
@@ -76,7 +76,7 @@ function getExportFileData(urls) {
 
       // 承認済データのステータス更新
       kintoneRows.filter((row)=>row.status === 'accepted').forEach(element => {
-          client.record.updateRecordStatus( {action:'公開する', app:APP_ID, id:record.id})
+          client.record.updateRecordStatus( {action:'公開する', app:APP_ID, id:element.id})
         });
     } catch (err) {
       console.log(err);
