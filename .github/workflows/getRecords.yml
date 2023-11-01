@@ -4,13 +4,13 @@ on:
   workflow_dispatch: 
   pull_request:
   schedule:
-    - cron: '0 9,18 * * *'  # 9:00 to 18:00 every hour 
+    - cron: '0 0-9 * * *'  # 9:00 to 18:00 every hour 
 
 jobs:
   getdata:
     runs-on: ubuntu-latest
     env:
-       KINTONE_API_TOKEN: ${{ vars.JNKYKN_KINTONE_API_TOKEN_APPID2 }}
+       KINTONE_API_TOKEN: ${{ secrets.JNKYKN_KINTONE_API_TOKEN_APPID2 }}
     permissions:
       statuses: write
       contents: write
@@ -19,8 +19,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: install kintone-api-client
-        run: npm install @kintone/rest-api-client
       - name: main job(get kintone records and create QRcode list)
         run: node jobs/getKintoneRecords.js
       - name: Diff

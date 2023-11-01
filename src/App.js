@@ -1,6 +1,24 @@
-import React, {useState, useEffect} from "react";
+import {useState, useEffect} from 'react';
+import {marked} from 'marked';
+import axios from 'axios';
 import './App.css';
-import {UrlList} from "./url_list.js";
+
+const UrlList = () => { 
+  const baseURL = './url_list.md';
+  const [post, setPost] = useState(null);
+  useEffect(() => {
+    axios.get(baseURL).then((response) => {
+      setPost(marked(response.data));
+    });
+  }, []);
+
+  if (!post) return <p>error!</p>;
+
+  console.log(post);
+  return (
+    <div>{post}</div>
+  );
+}
 
 function App() {
   return(
