@@ -1,19 +1,14 @@
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 const {appendFile} = require('fs');
 
-// リスト表示用タグの取得
+// リスト表示用csv出力データの取得
 function getUrlList(id, title, url, descriptions) {
-  return `- ${title}<div><img src=\"${getQRCodeUrl(url)}\" alt=\"${url}\" title=\"${title}\" /><div>${descriptions}</div>`;
-}
-
-// QRコード生成用URLの取得
-function getQRCodeUrl(url) {
-  return `http://api.qrserver.com/v1/create-qr-code/?data=${url}&size=100x100`;
+  return `${id},${title},${url},${descriptions}\n`;
 }
 
 (async () => {
     try {
-      const LIST_PATH = '../public/url_list.md';
+      const LIST_PATH = '../public/url_list.csv';
 
       // クライアントの作成
       const client = new KintoneRestAPIClient({
@@ -35,15 +30,19 @@ function getQRCodeUrl(url) {
       
       // レコードの取得
       const resp = await client.record.getRecords(params);
+      if(!resp || resp.records.length === 0){
+        console.log('nodata');
+        return;
+      }
       const kintoneRows = resp.records.map(
         (record)=>{
           const jrec = JSON.parse(JSON.stringify(record));
-          // リスト表示用タグの取得
+          // リスト表示用データのcsvデータ
           const urldata = getUrlList(jrec.$id.value,
                                          jrec.title.value,
                                          jrec.URL.value,
                                          jrec.descriptions.value);
-          // 表示用リストファイル出力
+          // 表示用csvに追加
           appendFile(LIST_PATH, urldata, err => {
             if( err ){
               console.log(err.message);
