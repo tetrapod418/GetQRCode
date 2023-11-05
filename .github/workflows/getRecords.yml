@@ -19,6 +19,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
+      - name: Install modules
+        run: npm ci
       - name: main job(get kintone records and create QRcode list)
         run: node jobs/getKintoneRecords.js
       - name: Diff

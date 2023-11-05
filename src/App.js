@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect,Fragment} from 'react';
 import axios from 'axios';
 import './App.css';
 
@@ -11,11 +11,8 @@ function getList(csvdata){
       const cols = colum.split(',');
         console.log(`line=${colum}`);
         console.log(`col.id=${cols[0]}`);
-        return <div ><div>{cols[1]}</div><div><img className='qrcode' src={getQRCodeUrl(cols[2])} alt={cols[1]} /></div><div>{cols[3]}</div></div>
-
-        }
-  
-      );
+        return  <Fragment key={cols[0]}><div className='item'><h2>{cols[1]}</h2><div className='qrcode'><img src={getQRCodeUrl(cols[2])} alt={cols[1]} /></div><div className='descriptions'>{cols[3]}</div></div></Fragment>
+        });
       return lists;
 }
 
@@ -38,15 +35,15 @@ const UrlList = () => {
 
   console.log(post);
   return (
-    <div>{post}</div>
+    <div className='contents'>{post}</div>
   );
 }
 
 function App() {
   return(
     <div>
-      <h1>kintoneアプリから取得したURLのリスト</h1>
-      <UrlList />
+      <h1 className='title'>kintoneアプリから取得したURLのリスト</h1>
+      <UrlList/>
   </div>
   );
  };

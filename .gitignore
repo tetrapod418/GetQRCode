@@ -25,3 +25,5 @@ yarn-debug.log*
 yarn-error.log*
 node_modules/*
 .yarn/
+
+ public/url_list.csv
