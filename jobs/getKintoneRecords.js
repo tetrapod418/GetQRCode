@@ -38,17 +38,10 @@ async function createOrUpdate(filepath){
   console.log(`repofile=${repofile}`);
   
   // 更新内容の読み込み
-  const content = readFile(filepath,err => {
-    if( err ){
-      console.log(err.message);
-    } else {
-      console.log(`read data file complete`);
-    }
-  }); 
-  console.log(`[content]=${content}`);
-
-  // 新規登録または追加
-  octokit.repos.createOrUpdate({
+  readFile(filepath, { encoding: "utf8" }).then(content => {
+    console.log(`read data file complete[content]=${content}`);
+    // 新規登録または追加
+    octokit.repos.createOrUpdate({
       owner: 'tetrapod418',//'owner-name',
       repo: 'GetQRCode',//'repo-name',
       path: repofile,
@@ -56,6 +49,10 @@ async function createOrUpdate(filepath){
       content: Buffer.from(content).toString('base64'),
       sha: file ? file.data.sha : null,
     });
+  }).catch(err => {
+    console.error(err.message);
+  });
+ 
 
 }
 
