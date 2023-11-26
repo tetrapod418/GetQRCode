@@ -1,9 +1,56 @@
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 const {appendFile} = require('fs');
+const {readFile} = require('fs');
+const { Octokit } = require("@octokit/rest");
 
 // リスト表示用csv出力データの取得
 function getUrlList(id, title, url, descriptions) {
   return `${id},${title},${url},${descriptions}\n`;
+}
+
+// リポジトリのファイル存在確認
+async function isExistRepoFile(octokit, repofile){
+  let file;
+  try {
+    file = await ({
+      owner: 'tetrapod418',//'owner-name',
+      repo: 'GetQRCode',//'repo-name',
+      path: repofile,//'path/to/file',
+    })
+  } catch (e) {
+    if (e.status !== 404) {
+      throw e
+    }
+    file = null;
+  }
+  return file;
+}
+
+// GitHub REST APIでリポジトリのcsvファイルを更新する
+async function createOrUpdate(filepath){
+
+  const octokit = new Octokit({
+        auth: process.env.MY_PRIVATE_TOKEN,
+       });
+
+  const repofile = filepath.replace('../', '');
+  const file = isExistRepoFile(octokit, repofile);
+  console.log(`repofile=${repofile}`);
+  
+  // 更新内容の読み込み
+  const content = readFile(filepath);
+  console.log(`content\n${content}`);
+
+  // 新規登録または追加
+  octokit.repos.createOrUpdate({
+      owner: 'tetrapod418',//'owner-name',
+      repo: 'GetQRCode',//'repo-name',
+      path: repofile,
+      message: 'Updated CSV File!',
+      content: Buffer.from(content).toString('base64'),
+      sha: file ? file.data.sha : null,
+    });
+
 }
 
 (async () => {
@@ -52,7 +99,11 @@ function getUrlList(id, title, url, descriptions) {
           }); 
           // 承認済データのステータス更新
           client.record.updateRecordStatus( {action:'公開する', app:APP_ID, id:jrec.$id.value});
-       });
+      });
+
+      // ファイルの存在有無によって、新規追加or更新
+      // GitHub REST APIでリポジトリのcsvファイルを更新する
+      createOrUpdate(LIST_PATH);
 
     } catch (err) {
       console.log(err);
