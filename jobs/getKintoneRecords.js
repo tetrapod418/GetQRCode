@@ -61,7 +61,7 @@ async function createOrUpdate(filepath){
 
 (async () => {
     try {
-      const LIST_PATH = '../public/url_list.csv';
+      const LIST_PATH = 'public/url_list.csv';
 
       // クライアントの作成
       const client = new KintoneRestAPIClient({
