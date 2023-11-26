@@ -38,8 +38,14 @@ async function createOrUpdate(filepath){
   console.log(`repofile=${repofile}`);
   
   // 更新内容の読み込み
-  const content = readFile(filepath);
-  console.log(`content\n${content}`);
+  const content = readFile(filepath,err => {
+    if( err ){
+      console.log(err.message);
+    } else {
+      console.log(`read data file complete`);
+    }
+  }); 
+  console.log(`[content]=${content}`);
 
   // 新規登録または追加
   octokit.repos.createOrUpdate({
