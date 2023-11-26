@@ -1,6 +1,6 @@
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 const {appendFile} = require('fs');
-const {readFile} = require('fs');
+const {readFileSync} = require('fs');
 const { Octokit } = require("@octokit/rest");
 
 // リスト表示用csv出力データの取得
@@ -38,20 +38,23 @@ async function createOrUpdate(filepath){
   console.log(`repofile=${repofile}`);
   
   // 更新内容の読み込み
-  readFile(filepath, { encoding: "utf8" }).then(content => {
+  try{
+    const content = readFileSync(filepath, { encoding: "utf8" });
     console.log(`read data file complete[content]=${content}`);
     // 新規登録または追加
     octokit.repos.createOrUpdate({
-      owner: 'tetrapod418',//'owner-name',
-      repo: 'GetQRCode',//'repo-name',
-      path: repofile,
-      message: 'Updated CSV File!',
-      content: Buffer.from(content).toString('base64'),
-      sha: file ? file.data.sha : null,
+        owner: 'tetrapod418',//'owner-name',
+        repo: 'GetQRCode',//'repo-name',
+        path: repofile,
+        message: 'Updated CSV File!',
+        content: Buffer.from(content).toString('base64'),
+        sha: file ? file.data.sha : null,
     });
-  }).catch(err => {
+      
+  }
+  catch(err){
     console.error(err.message);
-  });
+  };
  
 
 }
