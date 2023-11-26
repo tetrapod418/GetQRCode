@@ -9,17 +9,24 @@ function getUrlList(id, title, url, descriptions) {
 }
 
 // リポジトリのファイル存在確認
-async function isExistRepoFile(octokit, repofile){
+async function isExistRepoFile(repofile){
+  const octokit = new Octokit({
+    auth: process.env.MY_PRIVATE_TOKEN,
+   });
+
   let file;
   try {
-    file = await ({
+    file = await octokit.repos.getContent({
       owner: 'tetrapod418',//'owner-name',
       repo: 'GetQRCode',//'repo-name',
       path: repofile,//'path/to/file',
-    })
+    });
+
+    console.log(`sha=${!file.data.sha ? "null" : "exist"}`);
   } catch (e) {
     if (e.status !== 404) {
-      throw e
+      console.log(`e.status=${e.status}`);
+      
     }
     file = null;
   }
@@ -27,33 +34,31 @@ async function isExistRepoFile(octokit, repofile){
 }
 
 // GitHub REST APIでリポジトリのcsvファイルを更新する
-async function createOrUpdate(filepath){
+async function createOrUpdate(filepath, content){
 
-  const octokit = new Octokit({
-        auth: process.env.MY_PRIVATE_TOKEN,
-       });
 
   const repofile = filepath.replace('../', '');
-  const file = isExistRepoFile(octokit, repofile);
-  console.log(`repofile=${repofile}`);
-  
+  const file = isExistRepoFile(repofile);
+  console.log(`repofile=${repofile} file=${file.data ? "exist" : "null"}`);
+  const sha = file.data ? file.data.sha : null;
   // 更新内容の読み込み
   try{
-    const content = readFileSync(filepath, { encoding: "utf8" });
-    console.log(`read data file complete[content]=${content}`);
-    // 新規登録または追加
-    octokit.repos.createOrUpdate({
+    const octokit = new Octokit({
+      auth: process.env.MY_PRIVATE_TOKEN,
+     });
+  // 新規登録または追加
+    octokit.repos.createOrUpdateFileContents({
         owner: 'tetrapod418',//'owner-name',
         repo: 'GetQRCode',//'repo-name',
         path: repofile,
         message: 'Updated CSV File!',
         content: Buffer.from(content).toString('base64'),
-        sha: file ? file.data.sha : null,
+        sha: sha,
     });
       
   }
   catch(err){
-    console.error(err.message);
+    console.error(`${err.message} status=${err.status}`);
   };
  
 
@@ -87,6 +92,8 @@ async function createOrUpdate(filepath){
         console.log('nodata');
         return;
       }
+
+      let content = readFileSync(LIST_PATH, { encoding: "utf8" });
       const kintoneRows = resp.records.map(
         (record)=>{
           const jrec = JSON.parse(JSON.stringify(record));
@@ -105,11 +112,13 @@ async function createOrUpdate(filepath){
           }); 
           // 承認済データのステータス更新
           client.record.updateRecordStatus( {action:'公開する', app:APP_ID, id:jrec.$id.value});
+          // csvの内容をバッファに追加
+          content+=urldata;
       });
 
       // ファイルの存在有無によって、新規追加or更新
       // GitHub REST APIでリポジトリのcsvファイルを更新する
-      createOrUpdate(LIST_PATH);
+      createOrUpdate(LIST_PATH, content);
 
     } catch (err) {
       console.log(err);
