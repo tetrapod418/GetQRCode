@@ -3,8 +3,8 @@ name: Run get kintone records to show QR code list
 on:
   workflow_dispatch: 
   pull_request:
-  schedule:
-    - cron: '0 0-9 * * *'  # 9:00 to 18:00 every hour 
+  #schedule:
+  #  - cron: '0 0-9 * * *'  # 9:00 to 18:00 every hour 
 
 jobs:
   getdata:
