@@ -40,9 +40,10 @@ async function createOrUpdate(filepath, content){
 
 
   const file = isExistRepoFile(filepath);
-  console.log(`repofile=${filepath} file=${file.data ? "exist" : "null"}`);
+  console.log(`repofile=${filepath} sha${file.data ? file.data.sha : "null"}`);
   // 更新内容の読み込み
   try{
+
     const octokit = new Octokit({
       auth: process.env.MY_PRIVATE_TOKEN,
      });
