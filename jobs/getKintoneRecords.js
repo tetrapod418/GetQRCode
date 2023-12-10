@@ -39,22 +39,31 @@ async function isExistRepoFile(repofile){
 async function createOrUpdate(filepath, content){
 
 
-  const file = isExistRepoFile(filepath);
-  console.log(`repofile=${filepath} sha${file.data ? file.data.sha : "null"}`);
   // 更新内容の読み込み
   try{
-
     const octokit = new Octokit({
       auth: process.env.MY_PRIVATE_TOKEN,
      });
-  // 新規登録または追加
+
+     let file;
+     file = await octokit.repos.getContent({
+       owner: 'tetrapod418',//'owner-name',
+       repo: 'GetQRCode',//'repo-name',
+       path: filepath,//'path/to/file',
+     });
+   
+     const sha = !file.data.sha ? "null" : file.data.sha;
+     console.log(`sha=${sha}`);
+   
+
+     // 新規登録または追加
     octokit.repos.createOrUpdateFileContents({
         owner: 'tetrapod418',//'owner-name',
         repo: 'GetQRCode',//'repo-name',
         path: 'public/url_list.csv',
         message: 'Updated CSV File!',
         content: Buffer.from(content).toString('base64'),
-        sha: file.data ? file.sha : null,
+        sha
     });
       
   }
