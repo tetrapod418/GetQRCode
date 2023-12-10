@@ -9,35 +9,9 @@ function getUrlList(id, title, url, descriptions) {
   return `${id},${title},${url},${descriptions}\n`;
 }
 
-// リポジトリのファイル存在確認
-async function isExistRepoFile(repofile){
-  const octokit = new Octokit({
-    auth: process.env.MY_PRIVATE_TOKEN,
-   });
-
-  let file;
-  try {
-    file = await octokit.repos.getContent({
-      owner: 'tetrapod418',//'owner-name',
-      repo: 'GetQRCode',//'repo-name',
-      path: repofile,//'path/to/file',
-    });
-
-    const sha = !file.data.sha ? "null" : file.data.sha;
-    console.log(`sha=${sha}`);
-  } catch (e) {
-    if (e.status !== 404) {
-      console.log(`e.status=${e.status}`);
-      exit(1);
-    }
-    file = null;
-  }
-  return file;
-}
 
 // GitHub REST APIでリポジトリのcsvファイルを更新する
 async function createOrUpdate(filepath, content){
-
 
   // 更新内容の読み込み
   try{
