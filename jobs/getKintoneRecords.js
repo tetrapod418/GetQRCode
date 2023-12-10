@@ -2,6 +2,7 @@ const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 const {appendFile} = require('fs');
 const {readFileSync} = require('fs');
 const { Octokit } = require("@octokit/rest");
+const { exit } = require('process');
 
 // リスト表示用csv出力データの取得
 function getUrlList(id, title, url, descriptions) {
@@ -22,11 +23,12 @@ async function isExistRepoFile(repofile){
       path: repofile,//'path/to/file',
     });
 
-    console.log(`sha=${!file.data.sha ? "null" : "exist"}`);
+    const sha = !file.data.sha ? "null" : file.data.sha;
+    console.log(`sha=${sha}`);
   } catch (e) {
     if (e.status !== 404) {
       console.log(`e.status=${e.status}`);
-      
+      exit(1);
     }
     file = null;
   }
@@ -37,10 +39,8 @@ async function isExistRepoFile(repofile){
 async function createOrUpdate(filepath, content){
 
 
-  const repofile = filepath.replace('../', '');
-  const file = isExistRepoFile(repofile);
-  console.log(`repofile=${repofile} file=${file.data ? "exist" : "null"}`);
-  const sha = file.data ? file.data.sha : null;
+  const file = isExistRepoFile(filepath);
+  console.log(`repofile=${filepath} file=${file.data ? "exist" : "null"}`);
   // 更新内容の読み込み
   try{
     const octokit = new Octokit({
@@ -50,10 +50,10 @@ async function createOrUpdate(filepath, content){
     octokit.repos.createOrUpdateFileContents({
         owner: 'tetrapod418',//'owner-name',
         repo: 'GetQRCode',//'repo-name',
-        path: repofile,
+        path: 'public/url_list.csv',
         message: 'Updated CSV File!',
         content: Buffer.from(content).toString('base64'),
-        sha: sha,
+        sha: file.data ? file.data.sha : null,
     });
       
   }
