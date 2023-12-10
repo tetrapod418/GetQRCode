@@ -2,3 +2,4 @@
 10,REACT ＆ REST API,https://techbookfest.org/product/5905939209125888,Reactアプリからの外部サービス連携に興味があるエンジニアに向けに、Reactアプリとノーコード/ローコードでクラウド型データベースが作れるkintone（キントーン）の連携を題材にして解説します。<br>React v16.8からhooksという機能が登場し、描画内容を柔軟に変更出来るようになりました。本書では、このhooks機能を使った外部サービス連携について取り上げています。『kintoneまかない飯』『kintone 魔改造入門　ポータル編 PART1』の著者Willが、わかりやすい例えを交えて丁寧に解説していますので、楽しく読めること請け合いです。
 2,Cybozu Inside Out,https://blog.cybozu.io/,Cybozu Inside Out　は、サイボウズの開発本部、運用本部、サイボウズ・ラボのエンジニアのブログです。
 1,Cybozu Tech,https://tech.cybozu.io,Cybozu Tech は、サイボウズの開発本部、運用本部、サイボウズ・サボのエンジニアのポータルサイトです。
+12,kintone×GitHub Actions,https://techbookfest.org/product/kr6G9TfphmsakTtThpMH62,ウェブサイトのメンテナンスを自動化してルーチンワークを効率化しよう！というテーマで、QRリンクを集めたウェブサイトを題材に、QRリンクの追加や更新をkintone、GitHub Actions、Reactを使って自動化する方法を紹介しています。
