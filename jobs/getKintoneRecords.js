@@ -53,7 +53,7 @@ async function createOrUpdate(filepath, content){
         path: 'public/url_list.csv',
         message: 'Updated CSV File!',
         content: Buffer.from(content).toString('base64'),
-        sha: file.data ? file.data.sha : null,
+        sha: file.data ? file.sha : null,
     });
       
   }
