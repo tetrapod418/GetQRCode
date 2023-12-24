@@ -9,24 +9,7 @@ function getUrlList(id, title, url, descriptions) {
   return `${id},${title},${url},${descriptions}\n`;
 }
 
-// リポジトリのファイル情報取得
-async function GetRepoFile(octokit, filepath){
-  
-  let repofile;
-  try{
-    repofile = await octokit.repos.getContent({
-      owner: 'tetrapod418',//'owner-name',
-      repo: 'GetQRCode',//'repo-name',
-      path: filepath,//'path/to/file',
-    });
 
-    return repofile;
-  }catch(err){
-    console.error(`GetRepoFile error: ${err.message} status=${err.status}`);
-    return null;
-  }
-
-}
 // GitHub REST APIでリポジトリのcsvファイルを更新する
 async function createOrUpdate(filepath, content){
 
@@ -36,9 +19,14 @@ async function createOrUpdate(filepath, content){
       auth: process.env.MY_PRIVATE_TOKEN,
      });
 
-     const file = GetRepoFile(octokit, filepath);
+    // リポジトリのファイル情報取得
+    const file = await octokit.repos.getContent({
+                owner: 'tetrapod418',//'owner-name',
+                repo: 'GetQRCode',//'repo-name',
+                path: filepath,//'path/to/file',
+              });
 
-     const sha = (!file || !file.data.sha) ? "null" : file.data.sha;
+     const sha = (!file || !file.data || !file.data.sha) ? "null" : file.data.sha;
      console.log(`sha=${sha}`);
    
 
@@ -54,7 +42,7 @@ async function createOrUpdate(filepath, content){
       
   }
   catch(err){
-    console.error(`${err.message} status=${err.status}`);
+    console.error(`createOrUpdate err ${err.message} status=${err.status}`);
   };
  
 
