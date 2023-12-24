@@ -37,6 +37,7 @@ async function createOrUpdate(filepath, content){
      });
 
      const file = getRepoFile( filepath, octokit);
+     console.log(file);
      const sha = (!file || !file.data || !file.data.sha) ? "null" : file.data.sha;
      console.log(`sha=${sha}`);
    
