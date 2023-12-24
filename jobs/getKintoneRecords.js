@@ -9,6 +9,23 @@ function getUrlList(id, title, url, descriptions) {
   return `${id},${title},${url},${descriptions}\n`;
 }
 
+// リポジトリのファイル情報取得
+async function getRepoFile(filepath, octokit){
+
+  let repofile;
+  try{
+    repofile = await octokit.repos.getContent({
+      owner: 'tetrapod418',//'owner-name',
+      repo: 'GetQRCode',//'repo-name',
+      path: filepath,//'path/to/file',
+    });
+  }catch(err){
+    console.log(`getRepoFile Error ${err.message}`);
+    return null;
+  }
+  return {repofile};
+} 
+
 
 // GitHub REST APIでリポジトリのcsvファイルを更新する
 async function createOrUpdate(filepath, content){
@@ -19,13 +36,7 @@ async function createOrUpdate(filepath, content){
       auth: process.env.MY_PRIVATE_TOKEN,
      });
 
-    // リポジトリのファイル情報取得
-    const file = await octokit.repos.getContent({
-                owner: 'tetrapod418',//'owner-name',
-                repo: 'GetQRCode',//'repo-name',
-                path: filepath,//'path/to/file',
-              });
-
+     const file = getRepoFile( filepath, octokit);
      const sha = (!file || !file.data || !file.data.sha) ? "null" : file.data.sha;
      console.log(`sha=${sha}`);
    
