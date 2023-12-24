@@ -12,15 +12,15 @@ function getUrlList(id, title, url, descriptions) {
 // リポジトリのファイル情報取得
 async function GetRepoFile(octokit, filepath){
   
-  let file;
+  let repofile;
   try{
-    file = await octokit.repos.getContent({
+    repofile = await octokit.repos.getContent({
       owner: 'tetrapod418',//'owner-name',
       repo: 'GetQRCode',//'repo-name',
       path: filepath,//'path/to/file',
     });
 
-    return file;
+    return repofile;
   }catch(err){
     console.error(`GetRepoFile error: ${err.message} status=${err.status}`);
     return null;
@@ -38,7 +38,7 @@ async function createOrUpdate(filepath, content){
 
      const file = GetRepoFile(octokit, filepath);
 
-     const sha = !file.data.sha ? "null" : file.data.sha;
+     const sha = (!file || !file.data.sha) ? "null" : file.data.sha;
      console.log(`sha=${sha}`);
    
 
@@ -49,7 +49,7 @@ async function createOrUpdate(filepath, content){
         path: 'public/url_list.csv',
         message: 'Updated CSV File!',
         content: Buffer.from(content).toString('base64'),
-        sha:!file.data.sha ? null : file.data.sha
+        sha:(!file || !file.data || !file.data.sha) ? null : file.data.sha
     });
       
   }
