@@ -35,7 +35,7 @@ async function createOrUpdate(filepath, content){
       auth: process.env.MY_PRIVATE_TOKEN,
      });
 
-     const sha = getRepoSha(filepath, octokit);
+     const sha = await getRepoSha(filepath, octokit);
      console.log(`getRepoSha result ${sha ? sha : "file not found"}`);
      
 
