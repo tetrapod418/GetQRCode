@@ -10,20 +10,19 @@ function getUrlList(id, title, url, descriptions) {
 }
 
 // リポジトリのファイル情報取得
-async function getRepoFile(filepath, octokit){
+async function getRepoSha(filepath, octokit){
 
-  let repofile;
   try{
-    repofile = await octokit.repos.getContent({
+    const repofile = await octokit.repos.getContent({
       owner: 'tetrapod418',//'owner-name',
       repo: 'GetQRCode',//'repo-name',
       path: filepath,//'path/to/file',
     });
+    return (!repofile || !repofile.data ? null : repofile.data.sha);
   }catch(err){
     console.log(`getRepoFile Error ${err.message}`);
     return null;
   }
-  return {repofile};
 } 
 
 
@@ -36,11 +35,9 @@ async function createOrUpdate(filepath, content){
       auth: process.env.MY_PRIVATE_TOKEN,
      });
 
-     const file = getRepoFile( filepath, octokit);
-     console.log(file);
-     const sha = (!file || !file.data || !file.data.sha) ? "null" : file.data.sha;
-     console.log(`sha=${sha}`);
-   
+     const sha = getRepoSha(filepath, octokit);
+     console.log(`getRepoSha result ${sha ? sha : "file not found"}`);
+     
 
      // 新規登録または追加
     octokit.repos.createOrUpdateFileContents({
@@ -49,7 +46,7 @@ async function createOrUpdate(filepath, content){
         path: 'public/url_list.csv',
         message: 'Updated CSV File!',
         content: Buffer.from(content).toString('base64'),
-        sha:(!file || !file.data || !file.data.sha) ? null : file.data.sha
+        sha
     });
       
   }
