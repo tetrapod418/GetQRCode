@@ -4,3 +4,5 @@
 1,Cybozu Tech,https://tech.cybozu.io,Cybozu Tech は、サイボウズの開発本部、運用本部、サイボウズ・サボのエンジニアのポータルサイトです。
 12,kintone×GitHub Actions,https://techbookfest.org/product/kr6G9TfphmsakTtThpMH62,ウェブサイトのメンテナンスを自動化してルーチンワークを効率化しよう！というテーマで、QRリンクを集めたウェブサイトを題材に、QRリンクの追加や更新をkintone、GitHub Actions、Reactを使って自動化する方法を紹介しています。
 13,更新確認,https://example.com/test20231210,リポジトリのファイル更新の確認
+14,不要な関数を削除した結果の確認,https://example.com/test14,不要な関数を削除したあとの試験実行
+17,ファイル情報取得を戻した,https://example.com/changegetrepoinfo20231224,関数に切り出した部分を戻した
