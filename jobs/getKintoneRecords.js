@@ -9,7 +9,7 @@ function getUrlList(id, title, url, descriptions) {
   return `${id},${title},${url},${descriptions}\n`;
 }
 
-// リポジトリのファイルのsha取得
+// リポジトリの対象ファイルのsha取得
 async function getRepoSha(filepath, octokit){
 
   try{
