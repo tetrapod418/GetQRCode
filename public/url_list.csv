@@ -7,3 +7,4 @@
 14,不要な関数を削除した結果の確認,https://example.com/test14,不要な関数を削除したあとの試験実行
 17,ファイル情報取得を戻した,https://example.com/changegetrepoinfo20231224,関数に切り出した部分を戻した
 18,リポジトリのファイル情報の確認ログ追加,https://example.com/202312242239,リポジトリのファイル情報の確認用ログ追加
+19,await追加でかいけつできたことの確認,https://example.com/20231231await,async/awaitを何もわかっていなかったよ！
